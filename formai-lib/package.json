@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/core",
     "packages/react",
-    "packages/playground"
+    "packages/playground",
+    "packages/angular"
   ]
 }
