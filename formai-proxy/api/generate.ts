@@ -37,7 +37,9 @@ export default async function handler(
     return response.status(405).json({ error: 'Método não permitido' });
   }
 
-  const { userPrompt } = request.body;
+  const { userPrompt, maskCharacter } = request.body;
+  const digitPlaceholder = maskCharacter || '0';
+
   if (!userPrompt) {
     return response.status(400).json({ error: 'O "userPrompt" é obrigatório no body' });
   }
@@ -54,7 +56,7 @@ export default async function handler(
       Você é um assistente de programação focado em formulários.
       Sua tarefa é analisar uma descrição de um campo e devolver 
       APENAS um objeto JSON válido que defina esse campo.
-      
+    
       A estrutura do JSON deve ser essa:
       ${FIELD_CONFIG_SCHEMA}
 
@@ -64,11 +66,16 @@ export default async function handler(
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
 
       Regras de Máscara vs Regex:
-      - Se a descrição pedir um formato que guia a digitação (ex: 'telefone', 'telemóvel', 'CEP', 'data', 'CPF', 'CNPJ'), você deve:
+      - Se a descrição pedir um formato que guia a digitação (ex: 'telefone', 'CEP', 'data', 'CPF', 'CNPJ'), você deve:
         1. Definir o \`type\` como \`"mask-text"\`.
-        2. Preencha o campo \`mask\` com o formato de máscara (ex: \`'(99) 99999-9999'\`).
-      
-      - O campo \`mask\` é para a formatação do INPUT. O campo \`regex\` é para a VALIDAÇÃO final. Um campo pode ter os dois.
+        2. Preencher o campo \`mask\` com o formato de máscara adequado ao pedido.
+
+      - IMPORTANTE: O caractere que você deve usar para representar CADA dígito (0-9) na string da máscara é: '${digitPlaceholder}'.
+    
+      - Exemplo 1: Se o pedido for "CEP" e o placeholder for '0', a máscara deve ser '00000-000'.
+      - Exemplo 2: Se o pedido for "Telefone" e o placeholder for '0', a máscara deve ser '(00) 00000-0000'.
+      - Exemplo 3: Se o pedido for "Data" e o placeholder for '0', a máscara deve ser '00/00/0000'.
+
       - Para campos como 'email' ou 'nome', o \`type\` deve ser \`"text"\` e o \`mask\` deve ser \`null\`.
     `;
 

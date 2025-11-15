@@ -1,13 +1,14 @@
 import { useAIForm } from '@formai/react';
+import { IMaskInput } from 'react-imask';
 import './App.css';
 
 const PROXY_URL = "https://formai-iota.vercel.app/api/generate";
 
 /**
  * Componente de teste para o hook useAIForm
+ * Agora ele recebe o "prompt" como uma propriedade
  */
-function FieldTester() {
-  // 1. Pedimos um campo de email à IA!
+function FieldTester({ prompt }: { prompt: string }) {
   const {
     value,
     setValue,
@@ -15,38 +16,51 @@ function FieldTester() {
     validate,
     loading,
     config
-  } = useAIForm("um campo de email obrigatório");
-  // Nota: A função getFieldConfig no @formai/core
-  // deve ser atualizada para usar o PROXY_URL.
-  // Vamos verificar isso a seguir.
+  } = useAIForm(prompt); // Usamos o prompt passado por props
 
-  // 2. Mostra um loading enquanto a IA pensa
+  // Mostra loading
   if (loading) {
-    return <h2>🤖 A gerar campo de IA...</h2>;
+    return <h2>🤖 A gerar campo "{prompt}"...</h2>;
   }
 
-  // 3. Mostra um erro se a API falhar
+  // Mostra erro
   if (!config) {
     return <h2>Erro: {error || "Não foi possível carregar a configuração."}</h2>;
   }
 
-  // 4. Renderiza o input!
+  // 2. Renderização Condicional
   return (
     <div className="field-container">
-      <label htmlFor="email">Email (gerado por IA)</label>
-      <input
-        id="email"
-        type="text"
-        placeholder={config.placeholder || ''}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={validate} // Valida quando o utilizador sai do campo
-        className={error ? 'input-error' : ''}
-      />
-      {error && <p className="error-message">{error}</p>}
+      <label htmlFor={prompt}>{prompt}</label>
 
+      {/* SE A IA PEDIR MÁSCARA, USA O COMPONENTE DE MÁSCARA */}
+      {config.type === 'mask-text' && config.mask ? (
+        <IMaskInput
+          id={prompt}
+          mask={config.mask}
+          placeholder={config.placeholder || ''}
+          value={value}
+          // O 'onAccept' é o 'onChange' do IMaskInput
+          onAccept={(val: string) => setValue(val)}
+          onBlur={validate}
+          className={error ? 'input-error' : ''}
+        />
+      ) : (
+        /* CASO CONTRÁRIO, USA UM INPUT NORMAL */
+        <input
+          id={prompt}
+          type="text"
+          placeholder={config.placeholder || ''}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={validate}
+          className={error ? 'input-error' : ''}
+        />
+      )}
+
+      {error && <p className="error-message">{error}</p>}
       <pre>
-        <strong>Configuração recebida da IA:</strong>
+        <strong>Configuração da IA:</strong>
         {JSON.stringify(config, null, 2)}
       </pre>
     </div>
@@ -57,8 +71,11 @@ function FieldTester() {
 function App() {
   return (
     <div className="App">
-      <h1>Teste do 🤖 formAI</h1>
-      <FieldTester />
+      <div>
+        <h1>Teste do 🤖 formAI</h1>
+        {/* Vamos testar os dois casos! */}
+        <FieldTester prompt="Um campo obrigatório de celular no padrão Brasileiro" />
+      </div>
     </div>
   );
 }
