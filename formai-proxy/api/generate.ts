@@ -7,7 +7,7 @@ const FIELD_CONFIG_SCHEMA = `
   "placeholder": "string (sugestão de placeholder, se aplicável)",
   "mask": "string | null (Formato da máscara. Ex: '(99) 99999-9999'. Preencher APENAS se type='mask-text', caso contrário null)",
   "validation": {
-    "required": "boolean (true se a descrição implicar obrigatoriedade)",
+    "required": "boolean (APENAS 'true' se o utilizador pedir explicitamente. O padrão deve ser 'false'.)",
     "regex": "string | null (Formato de regex JavaScript, ex: '^[\\\\w-\\\\.]+@...')",
     "minLength": "number | null (inferido da descrição)",
     "maxLength": "number | null (inferido da descrição)"
@@ -65,6 +65,10 @@ export default async function handler(
       - Responda APENAS com o JSON.
       - Não inclua markdown (como \`\`\`json).
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
+
+      Regra de Obrigatoriedade (Required):
+      - IMPORTANTE: O campo \`required\` deve ser \`false\` por padrão.
+      - IMPORTANTE: Apenas defina \`required: true\` se o prompt do utilizador usar explicitamente palavras como 'obrigatório', 'mandatório', 'não pode ser nulo', ou 'necessário'.
     
       Regras de Máscara:
       - IMPORTANTE: O caractere para CADA dígito numérico (0-9) é: '${digitPlaceholder}'.

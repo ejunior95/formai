@@ -12,13 +12,19 @@ export interface FormAIConfig {
         maxLength: number | null;
     };
 }
+export interface FormAIOptions {
+    maskPatterns?: {
+        digit?: string;
+        letter?: string;
+    };
+}
 /**
  * Busca a configuração do campo a partir do prompt do usuário.
  * @param userPrompt O prompt do usuário descrevendo o campo
  * @param proxyUrl A URL do proxy da API (padrão: API_URL)
  * @returns A configuração do campo como um objeto FormAIConfig
  */
-export declare function getFieldConfig(userPrompt: string, proxyUrl?: string): Promise<FormAIConfig>;
+export declare function getFieldConfig(userPrompt: string, options?: FormAIOptions, proxyUrl?: string): Promise<FormAIConfig>;
 /**
  * Valida um valor com base na configuração do FormAI.
  * @param value O valor a validar

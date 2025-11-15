@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  getFieldConfig, 
-  validateValue, 
-  type FormAIConfig
-} from '@formai/core'; 
+import {
+  getFieldConfig,
+  validateValue,
+  type FormAIConfig,
+  type FormAIOptions
+} from '@formai/core';
 
 interface UseAIFormReturn {
   value: string;
@@ -16,10 +17,10 @@ interface UseAIFormReturn {
   config: FormAIConfig | null;
 }
 
-export function useAIForm(userPrompt: string): UseAIFormReturn {
+export function useAIForm(userPrompt: string, options?: FormAIOptions): UseAIFormReturn {
   const [config, setConfig] = useState<FormAIConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +28,7 @@ export function useAIForm(userPrompt: string): UseAIFormReturn {
     (async () => {
       setLoading(true);
       try {
-        const fieldConfig = await getFieldConfig(userPrompt);
+        const fieldConfig = await getFieldConfig(userPrompt, options);
         setConfig(fieldConfig);
       } catch (e) {
         console.error("Erro no useAIForm:", e);
@@ -36,14 +37,14 @@ export function useAIForm(userPrompt: string): UseAIFormReturn {
         setLoading(false);
       }
     })();
-  }, [userPrompt]);
+  }, [userPrompt, JSON.stringify(options)]);
 
   const validate = useCallback(() => {
     if (!config) return;
 
     const errorMessage = validateValue(value, config);
     setError(errorMessage);
-    
+
   }, [value, config]);
 
   return {

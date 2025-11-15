@@ -7,14 +7,16 @@ const API_URL = "https://formai-iota.vercel.app/api/generate";
  * @param proxyUrl A URL do proxy da API (padrão: API_URL)
  * @returns A configuração do campo como um objeto FormAIConfig
  */
-async function getFieldConfig(userPrompt, proxyUrl = API_URL) {
+async function getFieldConfig(userPrompt, options, proxyUrl = API_URL) {
     try {
+        const body = {
+            userPrompt,
+            maskPatterns: options?.maskPatterns
+        };
         const response = await fetch(proxyUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userPrompt }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
         });
         if (!response.ok) {
             throw new Error(`Erro na API do formAI: ${response.statusText}`);

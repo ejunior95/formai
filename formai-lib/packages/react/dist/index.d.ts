@@ -1,4 +1,4 @@
-import { type FormAIConfig } from '@formai/core';
+import { type FormAIConfig, type FormAIOptions } from '@formai/core';
 interface UseAIFormReturn {
     value: string;
     setValue: (value: string) => void;
@@ -7,5 +7,5 @@ interface UseAIFormReturn {
     loading: boolean;
     config: FormAIConfig | null;
 }
-export declare function useAIForm(userPrompt: string): UseAIFormReturn;
+export declare function useAIForm(userPrompt: string, options?: FormAIOptions): UseAIFormReturn;
 export {};

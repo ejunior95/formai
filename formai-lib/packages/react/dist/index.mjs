@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getFieldConfig, validateValue } from '@formai/core';
 
-function useAIForm(userPrompt) {
+function useAIForm(userPrompt, options) {
     const [config, setConfig] = useState(null);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState("");
@@ -10,7 +10,7 @@ function useAIForm(userPrompt) {
         (async () => {
             setLoading(true);
             try {
-                const fieldConfig = await getFieldConfig(userPrompt);
+                const fieldConfig = await getFieldConfig(userPrompt, options);
                 setConfig(fieldConfig);
             }
             catch (e) {
@@ -21,7 +21,7 @@ function useAIForm(userPrompt) {
                 setLoading(false);
             }
         })();
-    }, [userPrompt]);
+    }, [userPrompt, JSON.stringify(options)]);
     const validate = useCallback(() => {
         if (!config)
             return;

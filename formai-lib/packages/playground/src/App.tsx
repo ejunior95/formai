@@ -1,14 +1,23 @@
 import { useAIForm } from '@formai/react';
+import type { FormAIOptions } from '@formai/core';
 import { IMaskInput } from 'react-imask';
 import './App.css';
 
 const PROXY_URL = "https://formai-iota.vercel.app/api/generate";
 
+type MaskPatterns = FormAIOptions['maskPatterns'];
+
 /**
  * Componente de teste para o hook useAIForm
  * Agora ele recebe o "prompt" como uma propriedade
  */
-function FieldTester({ prompt }: { prompt: string }) {
+function FieldTester({ 
+  prompt, 
+  patterns
+}: { 
+  prompt: string, 
+  patterns?: MaskPatterns
+}) {
   const {
     value,
     setValue,
@@ -16,19 +25,18 @@ function FieldTester({ prompt }: { prompt: string }) {
     validate,
     loading,
     config
-  } = useAIForm(prompt); // Usamos o prompt passado por props
+  } = useAIForm(prompt, { 
+    maskPatterns: patterns
+  });
 
-  // Mostra loading
   if (loading) {
     return <h2>🤖 A gerar campo "{prompt}"...</h2>;
   }
 
-  // Mostra erro
   if (!config) {
     return <h2>Erro: {error || "Não foi possível carregar a configuração."}</h2>;
   }
 
-  // 2. Renderização Condicional
   return (
     <div className="field-container">
       <label htmlFor={prompt}>{prompt}</label>
@@ -67,14 +75,15 @@ function FieldTester({ prompt }: { prompt: string }) {
   );
 }
 
-// Componente App principal
 function App() {
   return (
     <div className="App">
       <div>
         <h1>Teste do 🤖 formAI</h1>
-        {/* Vamos testar os dois casos! */}
-        <FieldTester prompt="Um campo obrigatório de celular no padrão Brasileiro" />
+        <FieldTester 
+          prompt="Um campo para CEP brasileiro" 
+          patterns={{ digit: '0', letter: 'a' }}
+        />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 var react = require('react');
 var core = require('@formai/core');
 
-function useAIForm(userPrompt) {
+function useAIForm(userPrompt, options) {
     const [config, setConfig] = react.useState(null);
     const [loading, setLoading] = react.useState(true);
     const [value, setValue] = react.useState("");
@@ -12,7 +12,7 @@ function useAIForm(userPrompt) {
         (async () => {
             setLoading(true);
             try {
-                const fieldConfig = await core.getFieldConfig(userPrompt);
+                const fieldConfig = await core.getFieldConfig(userPrompt, options);
                 setConfig(fieldConfig);
             }
             catch (e) {
@@ -23,7 +23,7 @@ function useAIForm(userPrompt) {
                 setLoading(false);
             }
         })();
-    }, [userPrompt]);
+    }, [userPrompt, JSON.stringify(options)]);
     const validate = react.useCallback(() => {
         if (!config)
             return;

@@ -15,6 +15,13 @@ export interface FormAIConfig {
   };
 }
 
+export interface FormAIOptions {
+  maskPatterns?: {
+    digit?: string;
+    letter?: string;
+  }
+}
+
 /**
  * Busca a configuração do campo a partir do prompt do usuário.
  * @param userPrompt O prompt do usuário descrevendo o campo
@@ -23,16 +30,19 @@ export interface FormAIConfig {
  */
 export async function getFieldConfig(
   userPrompt: string,
-  proxyUrl: string = API_URL 
+  options?: FormAIOptions,
+  proxyUrl: string = API_URL
 ): Promise<FormAIConfig> {
-  
   try {
+    const body = {
+      userPrompt,
+      maskPatterns: options?.maskPatterns
+    };
+
     const response = await fetch(proxyUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userPrompt }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -64,7 +74,7 @@ export function validateValue(value: string | undefined | null, config: FormAICo
   if (validation.minLength && v.length < validation.minLength) {
     return `Deve ter no mínimo ${validation.minLength} caracteres.`;
   }
-  
+
   if (validation.maxLength && v.length > validation.maxLength) {
     return `Deve ter no máximo ${validation.maxLength} caracteres.`;
   }
