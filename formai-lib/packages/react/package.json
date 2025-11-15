@@ -1,0 +1,38 @@
+{
+  "name": "@formai/react",
+  "version": "0.1.0",
+  "description": "Adaptador React (Hooks) para o formAI.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c rollup.config.cjs",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "form",
+    "validation",
+    "ai",
+    "react",
+    "hooks"
+  ],
+  "author": "ejunior95",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@formai/core": "0.1.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/react": "^19.2.5",
+    "rollup": "^4.53.2",
+    "typescript": "^5.9.3"
+  }
+}
