@@ -22,6 +22,17 @@ export default async function handler(
   request: VercelRequest,
   response: VercelResponse,
 ) {
+
+  // Configuração CORS básica
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (request.method === 'OPTIONS') {
+    response.status(200).end();
+    return;
+  }
+
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Método não permitido' });
   }
