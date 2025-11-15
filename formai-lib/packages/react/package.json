@@ -1,5 +1,5 @@
 {
-  "name": "@formai/react",
+  "name": "@ejunior95/formai-react",
   "version": "0.1.0",
   "description": "Adaptador React (Hooks) para o formAI.",
   "main": "dist/index.js",
@@ -25,7 +25,7 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@formai/core": "0.1.0",
+    "@ejunior95/formai-core": "0.1.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },

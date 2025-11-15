@@ -6,7 +6,7 @@ import {
   validateValue,
   type FormAIConfig,
   type FormAIOptions
-} from '@formai/core';
+} from '@ejunior95/formai-core';
 
 interface UseAIFormReturn {
   value: string;

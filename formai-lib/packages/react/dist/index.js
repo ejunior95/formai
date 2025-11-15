@@ -1,7 +1,7 @@
 'use strict';
 
 var react = require('react');
-var core = require('@formai/core');
+var formaiCore = require('@ejunior95/formai-core');
 
 function useAIForm(userPrompt, options) {
     const [config, setConfig] = react.useState(null);
@@ -12,7 +12,7 @@ function useAIForm(userPrompt, options) {
         (async () => {
             setLoading(true);
             try {
-                const fieldConfig = await core.getFieldConfig(userPrompt, options);
+                const fieldConfig = await formaiCore.getFieldConfig(userPrompt, options);
                 setConfig(fieldConfig);
             }
             catch (e) {
@@ -27,7 +27,7 @@ function useAIForm(userPrompt, options) {
     const validate = react.useCallback(() => {
         if (!config)
             return;
-        const errorMessage = core.validateValue(value, config);
+        const errorMessage = formaiCore.validateValue(value, config);
         setError(errorMessage);
     }, [value, config]);
     return {

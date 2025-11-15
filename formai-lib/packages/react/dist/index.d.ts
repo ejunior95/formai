@@ -1,4 +1,4 @@
-import { type FormAIConfig, type FormAIOptions } from '@formai/core';
+import { type FormAIConfig, type FormAIOptions } from '@ejunior95/formai-core';
 interface UseAIFormReturn {
     value: string;
     setValue: (value: string) => void;

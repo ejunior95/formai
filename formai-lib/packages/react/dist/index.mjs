@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getFieldConfig, validateValue } from '@formai/core';
+import { getFieldConfig, validateValue } from '@ejunior95/formai-core';
 
 function useAIForm(userPrompt, options) {
     const [config, setConfig] = useState(null);

@@ -3,8 +3,6 @@
   "private": true,
   "workspaces": [
     "packages/core",
-    "packages/react",
-    "packages/playground",
-    "packages/angular"
+    "packages/react"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@formai/core",
+  "name": "@ejunior95/formai-core",
   "version": "0.1.0",
   "description": "O motor agnóstico do formAI que gera configurações de formulário a partir de prompts de IA.",
   "main": "dist/index.js",
