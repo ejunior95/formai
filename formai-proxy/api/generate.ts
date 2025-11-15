@@ -5,16 +5,19 @@ const FIELD_CONFIG_SCHEMA = `
 {
   "type": "'text' | 'select' | 'mask-text' | 'radio' | 'checkbox'",
   "placeholder": "string (sugestão de placeholder, se aplicável)",
-  "mask": "string (apenas se type='mask-text', formato da máscara, ex: '99/99/9999')",
+  "mask": "string | null (Formato da máscara. Ex: '(99) 99999-9999'. Preencher APENAS se type='mask-text', caso contrário null)",
   "validation": {
     "required": "boolean (true se a descrição implicar obrigatoriedade)",
-    "regex": "string (formato de regex JavaScript, ex: '^[\\\\w-\\\\.]+@...')",
-    "minLength": "number (inferido da descrição)",
-    "maxLength": "number (inferido da descrição)"
+    "regex": "string | null (Formato de regex JavaScript, ex: '^[\\\\w-\\\\.]+@...')",
+    "minLength": "number | null (inferido da descrição)",
+    "maxLength": "number | null (inferido da descrição)"
   }
 }
 `;
 
+/**
+ * Handler principal da nossa função
+ */
 export default async function handler(
   request: VercelRequest,
   response: VercelResponse,
@@ -24,7 +27,6 @@ export default async function handler(
   }
 
   const { userPrompt } = request.body;
-
   if (!userPrompt) {
     return response.status(400).json({ error: 'O "userPrompt" é obrigatório no body' });
   }
@@ -48,9 +50,15 @@ export default async function handler(
       Regras importantes:
       - Responda APENAS com o JSON.
       - Não inclua markdown (como \`\`\`json).
-      - Se a descrição pedir um formato (ex: NIF, email, telemóvel), 
-        gere o 'regex' de validação apropriado.
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
+
+      Regras de Máscara vs Regex:
+      - Se a descrição pedir um formato que guia a digitação (ex: 'telefone', 'telemóvel', 'CEP', 'data', 'CPF', 'CNPJ'), você deve:
+        1. Definir o \`type\` como \`"mask-text"\`.
+        2. Preencha o campo \`mask\` com o formato de máscara (ex: \`'(99) 99999-9999'\`).
+      
+      - O campo \`mask\` é para a formatação do INPUT. O campo \`regex\` é para a VALIDAÇÃO final. Um campo pode ter os dois.
+      - Para campos como 'email' ou 'nome', o \`type\` deve ser \`"text"\` e o \`mask\` deve ser \`null\`.
     `;
 
     const chatCompletion = await openai.chat.completions.create({
@@ -64,7 +72,6 @@ export default async function handler(
     });
 
     const jsonResponse = chatCompletion.choices[0].message.content;
-
     return response.status(200).send(jsonResponse);
 
   } catch (error: any) {
