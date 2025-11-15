@@ -82,7 +82,7 @@ function App() {
         <h1>Teste do 🤖 formAI</h1>
         <FieldTester 
           prompt="Um campo para CEP brasileiro" 
-          patterns={{ digit: '0', letter: 'a' }}
+          patterns={{ digit: '0' }}
         />
       </div>
     </div>

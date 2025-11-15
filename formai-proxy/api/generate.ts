@@ -5,12 +5,12 @@ const FIELD_CONFIG_SCHEMA = `
 {
   "type": "'text' | 'select' | 'mask-text' | 'radio' | 'checkbox'",
   "placeholder": "string (sugestão de placeholder, se aplicável)",
-  "mask": "string | null (Formato da máscara. Ex: '(99) 99999-9999'. Preencher APENAS se type='mask-text', caso contrário null)",
+  "mask": "string | null (Formato da máscara. Ex: '(00) 00000-0000'. Preencher APENAS se type='mask-text', caso contrário null)",
   "validation": {
-    "required": "boolean (APENAS 'true' se o utilizador pedir explicitamente. O padrão deve ser 'false'.)",
+    "required": "boolean (Padrão: false. SÓ 'true' se o prompt pedir explicitamente 'obrigatório' ou sinonimos)",
     "regex": "string | null (Formato de regex JavaScript, ex: '^[\\\\w-\\\\.]+@...')",
-    "minLength": "number | null (inferido da descrição)",
-    "maxLength": "number | null (inferido da descrição)"
+    "minLength": "number | null (Padrão: null. SÓ preencha se o prompt definir um tamanho específico)",
+    "maxLength": "number | null (Padrão: null. SÓ preencha se o prompt definir um tamanho específico)"
   }
 }
 `;
@@ -66,17 +66,29 @@ export default async function handler(
       - Não inclua markdown (como \`\`\`json).
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
 
-      Regra de Obrigatoriedade (Required):
-      - IMPORTANTE: O campo \`required\` deve ser \`false\` por padrão.
-      - IMPORTANTE: Apenas defina \`required: true\` se o prompt do utilizador usar explicitamente palavras como 'obrigatório', 'mandatório', 'não pode ser nulo', ou 'necessário'.
-    
+      ---
+      Regras de Validação (Obrigatório):
+
+      1. REGRA DE OURO: Na dúvida, prefira \`false\` e \`null\`. Não adivinhe regras que o utilizador não pediu.
+
+      2. \`required\`:
+         - O valor padrão é \`false\`.
+         - SÓ mude para \`true\` se o prompt usar palavras explícitas como 'obrigatório', 'mandatório', 'necessário', 'não pode ser nulo'.
+         - Se o prompt for simples (ex: "campo de email"), \`required\` deve ser \`false\`.
+
+      3. \`minLength\` / \`maxLength\`:
+         - O valor padrão é \`null\`.
+         - SÓ preencha se o prompt definir um tamanho (ex: "CPF de 11 dígitos", "nome com no máximo 50 caracteres").
+         - Para máscaras (como CPF, CEP), é correto inferir o \`minLength\` e \`maxLength\` da própria máscara.
+      ---
+
       Regras de Máscara:
       - IMPORTANTE: O caractere para CADA dígito numérico (0-9) é: '${digitPlaceholder}'.
       - IMPORTANTE: O caractere para CADA letra (a-z, A-Z) é: '${letterPlaceholder}'.
       
       - Exemplo 1 (Numérico): Se o pedido for "CEP" e o placeholder de dígito for '0', a máscara deve ser '${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}-${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}'.
       - Exemplo 2 (Alfanumérico): Se o pedido for "Placa de carro" e os placeholders forem 'a' (letra) e '0' (dígito), a máscara deve ser '${letterPlaceholder}${letterPlaceholder}${letterPlaceholder}-${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}'.
-    
+      
       - Para campos como 'email' ou 'nome', o \`type\` deve ser \`"text"\` e o \`mask\` deve ser \`null\`.
     `;
 
