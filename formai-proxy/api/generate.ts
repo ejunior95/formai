@@ -37,8 +37,9 @@ export default async function handler(
     return response.status(405).json({ error: 'Método não permitido' });
   }
 
-  const { userPrompt, maskCharacter } = request.body;
-  const digitPlaceholder = maskCharacter || '0';
+  const { userPrompt, maskPatterns } = request.body;
+  const digitPlaceholder = maskPatterns?.digit || '0'; 
+  const letterPlaceholder = maskPatterns?.letter || 'a';
 
   if (!userPrompt) {
     return response.status(400).json({ error: 'O "userPrompt" é obrigatório no body' });
@@ -56,26 +57,22 @@ export default async function handler(
       Você é um assistente de programação focado em formulários.
       Sua tarefa é analisar uma descrição de um campo e devolver 
       APENAS um objeto JSON válido que defina esse campo.
-    
+      
       A estrutura do JSON deve ser essa:
       ${FIELD_CONFIG_SCHEMA}
-
+    
       Regras importantes:
       - Responda APENAS com o JSON.
       - Não inclua markdown (como \`\`\`json).
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
-
-      Regras de Máscara vs Regex:
-      - Se a descrição pedir um formato que guia a digitação (ex: 'telefone', 'CEP', 'data', 'CPF', 'CNPJ'), você deve:
-        1. Definir o \`type\` como \`"mask-text"\`.
-        2. Preencher o campo \`mask\` com o formato de máscara adequado ao pedido.
-
-      - IMPORTANTE: O caractere que você deve usar para representar CADA dígito (0-9) na string da máscara é: '${digitPlaceholder}'.
     
-      - Exemplo 1: Se o pedido for "CEP" e o placeholder for '0', a máscara deve ser '00000-000'.
-      - Exemplo 2: Se o pedido for "Telefone" e o placeholder for '0', a máscara deve ser '(00) 00000-0000'.
-      - Exemplo 3: Se o pedido for "Data" e o placeholder for '0', a máscara deve ser '00/00/0000'.
-
+      Regras de Máscara:
+      - IMPORTANTE: O caractere para CADA dígito numérico (0-9) é: '${digitPlaceholder}'.
+      - IMPORTANTE: O caractere para CADA letra (a-z, A-Z) é: '${letterPlaceholder}'.
+      
+      - Exemplo 1 (Numérico): Se o pedido for "CEP" e o placeholder de dígito for '0', a máscara deve ser '${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}-${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}'.
+      - Exemplo 2 (Alfanumérico): Se o pedido for "Placa de carro" e os placeholders forem 'a' (letra) e '0' (dígito), a máscara deve ser '${letterPlaceholder}${letterPlaceholder}${letterPlaceholder}-${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}${digitPlaceholder}'.
+    
       - Para campos como 'email' ou 'nome', o \`type\` deve ser \`"text"\` e o \`mask\` deve ser \`null\`.
     `;
 
