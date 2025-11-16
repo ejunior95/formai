@@ -1,69 +1,148 @@
-# formAI 🤖
+# FormAI 🤖
+
+[![NPM Version](https://img.shields.io/npm/v/@ejunior95/formai-core)](https://www.npmjs.com/package/@ejunior95/formai-core)
+[![NPM Version](https://img.shields.io/npm/v/@ejunior95/formai-react)](https://www.npmjs.com/package/@ejunior95/formai-react)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Gere campos de formulário e validações complexas (React, Vue, Angular) apenas descrevendo o que precisas em linguagem natural.**
 
-Cansado de procurar por regex de email ou de NIF? Cansado de configurar máscaras e validações manualmente? O **formAI** é um experimento (Prova de Conceito) para resolver isso.
+Cansado de procurar por regex de email? Cansado de configurar máscaras de telefone? O **formAI** faz o trabalho aborrecido por si.
 
 ---
 
-## ⚠️ Status do Projeto: Prova de Conceito (MVP)
+## 🚀 Vantagens de usar o FormAI
 
-Este projeto está em desenvolvimento inicial. O objetivo atual é validar a arquitetura, especificamente a capacidade do "Agente de IA" (`formai-proxy`) de gerar JSON de validação de forma fiável a partir de linguagem natural.
+Construir formulários é repetitivo. Vamos usar IA para automatizar a parte mais aborrecida: a configuração e validação de cada campo.
 
----
+### ⛔️ Pare de fazer isto...
 
-## 🏛️ Como Funciona (Arquitetura)
+```jsx
+// Procurar regex, lembrar-se da máscara, gerir o estado...
+const [valor, setValor] = useState("");
+const [erro, setErro] = useState(null);
 
-O **formAI** é dividido em duas partes principais que trabalham em conjunto:
+// De onde veio este regex? Google? StackOverflow?
+const REGEX_TELEFONE = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+// A minha lib de máscara usa '0' ou '9'...?
+const MASCARA = "(00) 00000-0000"; 
 
-### 1. O Agente de IA (`formai-proxy`)
+const validar = () => {
+  if (!valor) {
+    setErro("Campo obrigatório.");
+  } else if (!REGEX_TELEFONE.test(valor)) {
+    setErro("Formato inválido.");
+  }
+};
 
-Como não podemos expor chaves de API da OpenAI no *frontend*, criámos um *proxy* simples.
+return (
+  <IMaskInput
+    mask={MASCARA}
+    value={valor}
+    onChange={(e) => setValor(e.target.value)}
+    onBlur={validar}
+  />
+)
+```
 
-* **O que é?** É uma API serverless (feita para Vercel) que atua como um intermediário seguro.
-* **O que faz?**
-    1.  Recebe um *prompt* de texto simples (ex: "um campo de telemóvel de Portugal obrigatório").
-    2.  Chama a API da OpenAI (GPT) de forma segura, usando uma chave de API guardada no servidor.
-    3.  Instrui a IA a devolver um objeto JSON estruturado com regras de validação, máscaras e *placeholders*.
+### ✨ Faça isto!
 
-### 2. A Biblioteca (`formai-lib`)
+```jsx
+import { useAIForm } from '@ejunior95/formai-react';
+import { IMaskInput } from 'react-imask'; // Traga os seus próprios componentes!
 
-Esta será a biblioteca "framework-agnostic" que os programadores irão instalar via NPM.
+function MeuCampoDeTelefone() {
+  const {
+    value,      // O estado do campo
+    setValue,   // O setter do estado
+    error,      // O estado do erro
+    validate,   // A função de validação
+    loading,    // O estado de loading da IA
+    config      // O objeto de configuração da IA
+  } = useAIForm("Um campo de telemóvel do Brasil obrigatório", {
+    maskPatterns: { digit: '0' } // '0' é o que o 'react-imask' usa
+  });
 
-* **O que é?** Um conjunto de pacotes NPM (ex: `@formAI/core`, `@formAI/react`).
-* **O que faz?**
-    1.  O utilizador (programador) usa um *Hook* (React) ou *Composable* (Vue).
-    2.  A biblioteca chama o nosso Agente de IA (`formai-proxy`).
-    3.  Recebe o JSON de configuração.
-    4.  Aplica automaticamente as validações, máscaras e *props* ao campo de formulário nativo.
+  if (loading) return <p>🤖 A gerar campo...</p>;
 
-### Fluxo de Dados
+  return (
+    <div>
+      <label>Telefone</label>
+      <IMaskInput
+        mask={config.mask} // A IA fornece a máscara!
+        placeholder={config.placeholder} // E o placeholder!
+        value={value}
+        onAccept={(val) => setValue(val)}
+        onBlur={validate} // A IA fornece a lógica de validação!
+      />
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
 
-`Frontend (React/Vue/Angular)` ➔ `formAI-Lib (npm)` ➔ `formAI-Proxy (Vercel)` ➔ `API da OpenAI`
+## 📦 Instalação (para React)
 
----
+O **formAI** é dividido em dois pacotes: o **motor (core)** e o **adaptador (react).** Você precisa de **AMBOS**.
 
-## 📁 Estrutura do Repositório
+```bash
+npm install @ejunior95/formai-core @ejunior95/formai-react
+```
 
-Este é um monorepo simples (por agora, sem ferramentas complexas como Turborepo ou Lerna).
+### 📖 Como Usar? (React)
 
-* **`/formai-proxy`**
-    Contém o código da função serverless Vercel. Este é o "cérebro" de IA do projeto.
+O `useAIForm` é um hook "headless" (sem UI). Ele não renderiza nada; apenas lhe dá o estado e a lógica para que você possa usar os seus próprios componentes (ShadCN, MUI, Ant Design, ou um `<input>` simples).
 
-* **`/formai-lib`**
-    Espaço reservado para os futuros pacotes NPM (`@formAI/core`, `@formAI/react`, etc.).
+##### Assinatura do Hook
 
----
+```jsx
+useAIForm(
+  prompt: string,
+  options?: FormAIOptions
+): UseAIFormReturn
+```
 
-## 🗺️ Roadmap (Próximos Passos)
+* **prompt:** `A descrição em linguagem natural (ex: "Quero um campo de email", "Quero um campo de CEP de 8 dígitos obrigatório").`
+* **options:** `Objeto opcional`
 
-1.  [✅] **Configurar o `formai-proxy`**: Escrever o código da função serverless.
-2.  [ ] **Deploy do Proxy**: Fazer o deploy do `formai-proxy` na Vercel e testar o *endpoint*.
-3.  [ ] **Iniciar o `@formAI/core`**: Criar o pacote NPM principal que sabe como chamar o *proxy*.
-4.  [ ] **Criar o `@formAI/react`**: Construir o primeiro *Hook* de React (`useAIForm`) que consome o `@formAI/core`.
-5.  [ ] Prova de Conceito para Vue e Angular.
 
----
+- **maskPatterns:** `Um objeto que diz à IA quais caracteres a sua biblioteca de máscara usa.`
+
+    * **digit:** `O caractere para dígitos (ex: '0').`
+    * **letter:** `O caractere para letras (ex: 'a').`
+
+##### Valor de Retorno
+
+O `hook` devolve um objeto com tudo o que precisa:
+
+* **value:** O estado atual do valor do campo.
+
+* **setValue:** A função setter para atualizar o valor.
+
+* **error:** null se for válido, ou uma string com a mensagem de erro.
+
+* **validate:** Uma função para disparar a validação (ideal para o onBlur).
+
+* **loading:** Um boolean que fica true enquanto a IA está a gerar a configuração.
+
+* **config:** O objeto JSON puro vindo da IA (contém mask, placeholder, regex, required, etc.).
+
+## 🏛️ Como Funciona?
+
+O `formAI` usa uma arquitetura de proxy simples para proteger as chaves de API e garantir a flexibilidade.
+
+1. O hook `useAIForm` (no seu frontend) recebe o seu prompt.
+
+2. Ele envia o prompt para um proxy seguro na Vercel (`formai-proxy`).
+
+3. O proxy consulta uma IA (GPT) de forma segura, instruindo-a a devolver um JSON estruturado.
+
+4. O hook recebe esse JSON (`config`) e gere o estado (`value`, `error`) e a lógica de validação (`validate`) para si.
+
+## 🗺️ Próximas Features
+
+* ⚛️ **React:** ✅ Disponível! (`@ejunior95/formai-react`)
+* 🅰️ **Angular:** ⏳ Em breve...
+* 💚 **Vue:** ⏳ Em breve...
 
 ## ⚖️ Licença
 
