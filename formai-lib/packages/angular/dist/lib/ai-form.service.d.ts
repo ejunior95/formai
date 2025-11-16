@@ -1,4 +1,5 @@
 import { type FormAIConfig, type FormAIOptions } from '@ejunior95/formai-core';
+import * as i0 from "@angular/core";
 /**
  * Nota: @Injectable() sem 'providedIn'
  * * Não estamos usando 'providedIn: "root"'.
@@ -10,9 +11,9 @@ export declare class AiFormService {
     /** O valor atual do campo (controlado pelo serviço) */
     readonly value: import("@angular/core").WritableSignal<string>;
     /** O erro de validação atual */
-    readonly error: import("@angular/core").WritableSignal<string | null>;
+    readonly error: import("@angular/core").WritableSignal<string>;
     /** A configuração do campo (ex: type, placeholder) vinda da IA */
-    readonly config: import("@angular/core").WritableSignal<FormAIConfig | null>;
+    readonly config: import("@angular/core").WritableSignal<FormAIConfig>;
     /** O estado de carregamento da chamada inicial à IA */
     readonly loading: import("@angular/core").WritableSignal<boolean>;
     constructor();
@@ -31,4 +32,6 @@ export declare class AiFormService {
      * Deve ser chamado no evento (blur) do <input>.
      */
     validate(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AiFormService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<AiFormService>;
 }

@@ -5,16 +5,12 @@
   "author": "ejunior95",
   "license": "MIT",
   "main": "dist/bundles/ejunior95-formai-angular.umd.js",
-  "module": "dist/fesm2022/ejunior95-formai-angular.mjs",
+  "module": "fesm2022/ejunior95-formai-angular.mjs",
   "fesm2022": "dist/fesm2022/ejunior95-formai-angular.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "ng-packagr -p ng-package.json",
-    "prepublishOnly": "npm run build"
-  },
   "keywords": [
     "form",
     "validation",
@@ -30,10 +26,17 @@
     "@ejunior95/formai-core": "^0.1.0",
     "@angular/core": ">=16.0.0"
   },
-  "devDependencies": {
-    "@angular/compiler": "^18.0.0",
-    "@angular/compiler-cli": "^18.0.0",
-    "ng-packagr": "^18.0.0",
-    "typescript": "~5.4.5"
-  }
+  "typings": "index.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./index.d.ts",
+      "esm2022": "./esm2022/ejunior95-formai-angular.mjs",
+      "esm": "./esm2022/ejunior95-formai-angular.mjs",
+      "default": "./fesm2022/ejunior95-formai-angular.mjs"
+    }
+  },
+  "sideEffects": false
 }
