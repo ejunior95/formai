@@ -15,6 +15,20 @@ const FIELD_CONFIG_SCHEMA = `
 }
 `;
 
+const DEFAULT_FALLBACK_CONFIG = {
+  type: "text",
+  placeholder: "Input",
+  mask: null,
+  validation: {
+    required: false,
+    regex: null,
+    minLength: null,
+    maxLength: null
+  }
+};
+
+const cache = new Map<string, string>();
+
 /**
  * Handler principal da nossa função
  */
@@ -45,6 +59,15 @@ export default async function handler(
     return response.status(400).json({ error: 'O "userPrompt" é obrigatório no body' });
   }
 
+  const cacheKey = JSON.stringify(request.body);
+
+  if (cache.has(cacheKey)) {
+    console.log("CACHE HIT", cacheKey);
+    return response.status(200).send(cache.get(cacheKey));
+  }
+  
+  console.log("CACHE MISS", cacheKey);
+
   try {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -65,6 +88,11 @@ export default async function handler(
       - Responda APENAS com o JSON.
       - Não inclua markdown (como \`\`\`json).
       - Para regex, usa barras invertidas duplas (ex: '\\\\d{9}').
+
+      REGRA DE FALLBACK (A MAIS IMPORTANTE):
+      - Se o prompt do utilizador não for um pedido sobre um campo de formulário (ex: "escreva um poema", "qual a capital de França?", "me ajude com CSS"), 
+        você deve IGNORAR todas as outras regras e devolver EXATAMENTE este objeto JSON:
+      ${JSON.stringify(DEFAULT_FALLBACK_CONFIG)}
 
       ---
       Regras de Validação (Obrigatório):
@@ -103,6 +131,11 @@ export default async function handler(
     });
 
     const jsonResponse = chatCompletion.choices[0].message.content;
+
+    if (jsonResponse) {
+      cache.set(cacheKey, jsonResponse);
+    }
+
     return response.status(200).send(jsonResponse);
 
   } catch (error: any) {
