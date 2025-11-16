@@ -1,0 +1,37 @@
+{
+  "name": "@ejunior95/formai-angular",
+  "version": "0.1.0",
+  "description": "Adaptador Angular (Signals) para o formAI.",
+  "author": "ejunior95",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.cjs",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "form",
+    "validation",
+    "ai",
+    "angular",
+    "service",
+    "signals"
+  ],
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@ejunior95/formai-core": "^0.1.0",
+    "@angular/core": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.9.6",
+    "typescript": "^5.4.5"
+  }
+}

@@ -99,5 +99,5 @@ Returns null if valid, or an string with the error message if invalid.
 This package is just the engine. For easy integration, use one of our official adapters:
 
 * ⚛️ **React:** npm install @ejunior95/formai-react (Available Now!)
-* 🅰️ **Angular:** Coming Soon!
+* 🅰️ **Angular:** npm install @ejunior95/formai-angular (Available Now!)
 * 💚 **Vue:** Coming Soon!

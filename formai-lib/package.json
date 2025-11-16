@@ -3,6 +3,10 @@
   "private": true,
   "workspaces": [
     "packages/core",
-    "packages/react"
-  ]
+    "packages/react",
+    "packages/angular"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces"
+  }
 }
